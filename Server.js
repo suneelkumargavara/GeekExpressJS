@@ -11,6 +11,7 @@ dotEnv.config({ path: "./Config/config.env" });
 
 //Routes
 const bootcamps = require("./Routes/bootcamps");
+const courses = require("./Routes/courses");
 
 //Connect Mongo DB
 connectDB();
@@ -27,6 +28,8 @@ if (process.env.NODE_ENV === "development") {
 
 //Add Routers
 app.use("/api/v1/bootcamps", bootcamps);
+
+app.use("/api/v1/courses", courses);
 
 app.use(errorHandler);
 
