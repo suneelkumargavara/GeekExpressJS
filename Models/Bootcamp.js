@@ -28,27 +28,31 @@ const Bootcampschema = new mongoose.Schema({
     type: String,
     minlength: [0, "Please Enter Valid Address"],
   },
-  careers: {
-    type: String,
-    enum: [
-      "Web Development",
-      "UI/UX",
-      "Business",
-      "Data Science",
-      "Mobile Development",
-    ],
-  },
+  careers: [
+    {
+      type: String,
+      enum: [
+        "Web Development",
+        "UI/UX",
+        "Business",
+        "Data Science",
+        "Mobile Development",
+      ],
+      require: true,
+    },
+  ],
   housing: Boolean,
   jobAssistance: Boolean,
   jobGuarantee: Boolean,
   acceptGi: Boolean,
+  averageCost: Number,
 });
 
-//Create bootcamp slug from schema
-Bootcampschema.pre("save", function (next) {
-  this.slug = slugify(this.name, { lower: true });
-  next();
-});
+// //Create bootcamp slug from schema
+// Bootcampschema.pre("save", function (next) {
+//   this.slug = slugify(this.name, { lower: true });
+//   next();
+// });
 
 //Geocode and locationField
 Bootcampschema.pre("save", async function (next) {
