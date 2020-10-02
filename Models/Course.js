@@ -1,41 +1,36 @@
-const mongoose = require("mongoose");
-
+const mongoose = require('mongoose')
 const CourseSchema = new mongoose.Schema({
   title: {
     type: String,
     trim: true,
-    required: [true, "Please add course title"],
+    required: [true, 'Please add course Title']
   },
   description: {
     type: String,
-    required: [true, "Please add a description"],
+    required: [true, 'Please Add description']
   },
   weeks: {
     type: Number,
-    required: [true, "Please add number of week"],
-  },
-  tuition: {
-    type: Number,
-    required: [true, "Please add tution case"],
+    required: [true, 'Please add number of week']
   },
   minimumSkill: {
     type: String,
-    required: [true, "Please add minimum skill"],
-    enum: ["beginner", "intermediate", "advanced"],
+    required: [true, 'Please add minimum skill'],
+    enum: ['beginner', 'intermediate', 'advanced']
   },
-  scholarshipAvailable: {
+  scholarshipsAvailable: {
     type: Boolean,
-    default: false,
+    default: false
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now
   },
-  bootcamp: {
+  bootCamp: {
     type: mongoose.Schema.ObjectId,
-    ref: "Bootcamp",
-    required: true,
-  },
-});
+    ref: 'Bootcamp',
+    required: true
+  }
+})
 
-module.exports = mongoose.model("Course", CourseSchema);
+module.exports = mongoose.model('Course', CourseSchema)
