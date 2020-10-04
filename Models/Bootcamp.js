@@ -2,51 +2,64 @@ const mongoose = require('mongoose')
 const slugify = require('slugify')
 const geoCoder = require('../Utils/geocoder')
 
-const BootCampSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  slug: String,
-  description: {
-    type: String,
-    minlength: [0, 'Please Enter Atlease one character']
-  },
-  phone: {
-    type: String,
-    minlength: [10, 'Please Enter Atlease 10 characters']
-  },
-  email: {
-    type: String,
-    match: [
-      /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/,
-      'Please Enter Vaild Email'
-    ]
-  },
-  address: {
-    type: String,
-    minlength: [0, 'Please Enter valid address']
-  },
-  careers: [
-    {
+const BootCampSchema = new mongoose.Schema(
+  {
+    name: {
       type: String,
-      enum: [
-        'Web Development',
-        'UI/UX',
-        'Business',
-        'Data Science',
-        'Mobile Development'
-      ],
+      unique: true,
       required: true
+    },
+    slug: String,
+    description: {
+      type: String,
+      minlength: [0, 'Please Enter Atlease one character']
+    },
+    phone: {
+      type: String,
+      minlength: [10, 'Please Enter Atlease 10 characters']
+    },
+    email: {
+      type: String,
+      match: [
+        /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/,
+        'Please Enter Vaild Email'
+      ]
+    },
+    address: {
+      type: String,
+      minlength: [0, 'Please Enter valid address']
+    },
+    careers: [
+      {
+        type: String,
+        enum: [
+          'Web Development',
+          'UI/UX',
+          'Business',
+          'Data Science',
+          'Mobile Development'
+        ],
+        required: true
+      }
+    ],
+    housing: Boolean,
+    jobAssistance: Boolean,
+    jobGuarantee: Boolean,
+    acceptGi: Boolean,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    avarageCost: {
+      type: Number,
+      required: false
     }
-  ],
-  housing: Boolean,
-  jobAssistance: Boolean,
-  jobGuarantee: Boolean,
-  acceptGi: Boolean,
-  averageCost: Number
-})
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+  }
+)
 
 BootCampSchema.pre('save', async function (next) {
   this.slug = slugify(this.name, { lower: true })
@@ -70,6 +83,21 @@ BootCampSchema.pre('save', async function (next) {
   } catch (error) {
     this.location = error
   }
+  next()
+})
+
+//Reverse Populates with virtuals
+BootCampSchema.virtual('courses', {
+  ref: 'Course',
+  localField: '_id',
+  foreignField: 'bootcamp',
+  justOne: false
+})
+
+//Cascade delete courses when a bootcamp is deleted
+BootCampSchema.pre('remove', async function (next) {
+  console.log(`Courses being removed from bootcamp ${this._id}`)
+  await this.model('Course').deleteMany({ bootcamp: this._id })
   next()
 })
 
