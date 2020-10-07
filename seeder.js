@@ -31,8 +31,8 @@ console.log('courses are', courses)
 // Import into DB
 const importData = async () => {
   try {
-    await Course.create(courses)
     await Bootcamp.create(bootcamps)
+    await Course.create(courses)
     console.log('Data imported'.green.inverse)
     process.exit()
   } catch (err) {
