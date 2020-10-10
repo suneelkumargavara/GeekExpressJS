@@ -3,6 +3,7 @@ const dotEnv = require('dotenv')
 const morgon = require('morgan')
 const fileUpload = require('express-fileupload')
 const path = require('path')
+const cookieParser = require('cookie-parser')
 
 const connectDB = require('./Config/db')
 const errorHandler = require('./middleware/error')
@@ -14,6 +15,7 @@ dotEnv.config({ path: './Config/config.env' })
 //Routes
 const bootcamps = require('./Routes/bootcamps')
 const courses = require('./Routes/courses')
+const auth = require('./Routes/auth')
 
 //Connect to MongoDB
 connectDB()
@@ -22,6 +24,9 @@ const app = express()
 
 //Add Parser
 app.use(express.json())
+
+// Cookie parser
+app.use(cookieParser())
 
 //Dev Logging middleware
 if (process.env.NODE_ENV === 'development') {
@@ -37,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 //Add Routers
 app.use('/api/v1/bootcamps', bootcamps)
 app.use('/api/v1/courses', courses)
+app.use('/api/v1/auth', auth)
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
