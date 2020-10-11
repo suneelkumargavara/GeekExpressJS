@@ -2,6 +2,7 @@ const ErrorResponse = require('../Utils/errorResponse')
 const asyncHandler = require('../middleware/async')
 const Course = require('../Models/Course')
 const Bootcamp = require('../Models/Bootcamp')
+const { use } = require('../Routes/courses')
 
 //@desc GetCourses
 //@route GET api/v1/courses
@@ -58,7 +59,15 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
       404
     )
   }
-
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User with id ${req.user.id} is not authorized to add a course to add a bootcamp to ${bootcamp.id}`
+      ),
+      401
+    )
+  }
+  req.body.user = bootcamp.user
   const course = await Course.create(req.body)
   res.status(200).json({
     success: true,
@@ -80,6 +89,15 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
     )
   }
 
+  if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User with id ${req.user.id} has no access to update course with id ${id}`
+      ),
+      401
+    )
+  }
+
   course = await Course.findByIdAndUpdate(req.params.id, req.body, {
     runValidators: true,
     new: true
@@ -97,13 +115,23 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 //@description Delete Course
 //@api GET/api/v1/courses/:id
 //@access private
-exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
+exports.deleteCourse = asyncHandler(async (req, res, next) => {
   const { id } = req.params
   const course = await Course.findById(id)
 
   if (!course) {
     return next(new ErrorResponse(`Unable to find response with id ${id}`), 404)
   }
+
+  if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User has no access to delete course with id ${req.user.id}`
+      ),
+      401
+    )
+  }
+
   course.remove()
 
   res.status(200).json({
