@@ -53,6 +53,11 @@ const BootCampSchema = new mongoose.Schema(
     avarageCost: {
       type: Number,
       required: false
+    },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: true
     }
   },
   {

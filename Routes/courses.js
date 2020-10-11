@@ -9,7 +9,7 @@ const {
   getCourse,
   addCourse,
   updateCourse,
-  deleteBootcamp
+  deleteCourse
 } = require('../controllers/courses')
 const advancedResults = require('../middleware/advancedResults')
 
@@ -21,5 +21,5 @@ router
   .route('/:id')
   .get(getCourse)
   .put(protect, authorize('publisher', 'admin'), updateCourse)
-  .delete(protect, authorize('publisher', 'admin'), deleteBootcamp)
+  .delete(protect, authorize('publisher', 'admin'), deleteCourse)
 module.exports = router
