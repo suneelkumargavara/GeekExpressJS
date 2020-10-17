@@ -11,11 +11,9 @@ exports.protect = asyncHandler(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1]
+  } else if (req.cookies.token) {
+    token = req.cookies.token
   }
-  //   else if(req.cookies.token) {
-  //       token = req.cookies.token
-  //   }
-
   // Make sure token exists
   if (!token) {
     return next(new ErrorResponse('not authorized to access this route'), 401)
@@ -26,6 +24,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     console.log(decoded)
     req.user = await User.findById(decoded.id)
+    console.log(`Error of user is ${req.user}`.violet)
     next()
   } catch (error) {
     return next(new ErrorResponse('invalid Token'), 400)
